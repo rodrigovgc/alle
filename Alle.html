@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ale">
+<title>Ale</title>
+<style>
+/* ─── Reset ─── */
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{margin:0;padding:0;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Helvetica,sans-serif;font-size:17px;color:#111;-webkit-font-smoothing:antialiased;overscroll-behavior:none;margin:0;padding:0;}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+input,textarea{font:inherit;color:inherit}
+
+/* ─── Screens ─── */
+.screen{display:none;min-height:100dvh}
+.screen.on{display:flex;flex-direction:column}
+
+/* ══════════════════════════════════════
+   HOME
+══════════════════════════════════════ */
+#home{
+  background:#fff;
+  padding:max(env(safe-area-inset-top),20px) 20px calc(env(safe-area-inset-bottom) + 24px);
+}
+.brand{padding:28px 0 8px}
+.brand h1{margin:0;font-size:42px;font-weight:700;letter-spacing:-.025em;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif}
+.brand p{margin:6px 0 0;color:#888;font-size:15px}
+
+.today-row{display:flex;gap:0;margin:20px 0 22px;background:#f2f2f7;border-radius:20px;padding:16px 20px;gap:28px}
+.today-stat b{display:block;font-size:26px;font-weight:700;letter-spacing:-.02em}
+.today-stat span{font-size:13px;color:#888}
+
+.deck-list{display:flex;flex-direction:column;gap:10px;flex:1}
+.deck-item{
+  width:100%;text-align:left;background:#f2f2f7;border-radius:18px;
+  padding:16px 18px;display:flex;align-items:center;gap:14px;border:none
+}
+.deck-item:active{opacity:.7}
+.deck-meta{flex:1;min-width:0}
+.deck-name{font-size:18px;font-weight:600;letter-spacing:-.01em}
+.deck-info{font-size:14px;color:#888;margin-top:2px}
+.deck-bar{height:3px;border-radius:2px;background:#ddd;margin-top:10px;overflow:hidden}
+.deck-bar i{display:block;height:100%;background:#007AFF;border-radius:2px}
+.deck-due{flex:none;min-width:32px;height:26px;padding:0 8px;border-radius:13px;font-size:13px;font-weight:600;background:rgba(0,122,255,.1);color:#007AFF;display:grid;place-items:center}
+.deck-due.zero{background:#e5e5ea;color:#aaa}
+
+.home-btns{margin-top:22px;display:flex;flex-direction:column;gap:10px}
+.btn-blue{width:100%;min-height:56px;border-radius:999px;background:#007AFF;color:#fff;font-size:17px;font-weight:600;border:none;cursor:pointer;letter-spacing:-.01em}
+.btn-blue:active{opacity:.82}
+.btn-blue:disabled{opacity:.38;pointer-events:none}
+.btn-plain{width:100%;min-height:50px;border-radius:999px;background:#f2f2f7;color:#111;font-size:17px;font-weight:500;border:none;cursor:pointer}
+.btn-plain:active{opacity:.7}
+
+/* ══════════════════════════════════════
+   IPHONE PREVIEW WRAPPER
+   Constrains the whole app to 390×844
+   (iPhone 16 / 15 logical px) centered
+══════════════════════════════════════ */
+body{
+  /* on desktop: show device frame */
+  display:flex;align-items:flex-start;justify-content:center;
+  min-height:100vh;background:#E5E5EA;
+}
+.device{
+  width:390px;
+  min-height:844px;
+  background:#fff;
+  position:relative;
+  /* on mobile: just fill the screen */
+  box-shadow:0 24px 80px rgba(0,0,0,.28), 0 2px 8px rgba(0,0,0,.18);
+  border-radius:54px;
+  overflow:hidden;
+  margin:24px 0;
+  display:flex;flex-direction:column;
+}
+/* On actual iPhone: remove frame */
+@media (max-width:430px){
+  body{background:#fff;display:block}
+  .device{width:100%;min-height:100dvh;border-radius:0;box-shadow:none;margin:0}
+}
+
+.screen{display:none;min-height:100%;flex-direction:column}
+.screen.on{display:flex}
+
+/* ══════════════════════════════════════
+   HOME
+══════════════════════════════════════ */
+#home{
+  background:#fff;
+  padding:max(env(safe-area-inset-top),52px) 20px calc(env(safe-area-inset-bottom) + 24px);
+  flex:1;
+}
+.brand{padding:8px 0 8px}
+.brand h1{margin:0;font-size:42px;font-weight:700;letter-spacing:-.025em;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif}
+.brand p{margin:6px 0 0;color:#888;font-size:15px}
+
+.today-row{display:flex;margin:20px 0 22px;background:#f2f2f7;border-radius:20px;padding:16px 20px;gap:28px}
+.today-stat b{display:block;font-size:26px;font-weight:700;letter-spacing:-.02em}
+.today-stat span{font-size:13px;color:#888}
+
+.deck-list{display:flex;flex-direction:column;gap:10px;flex:1}
+.deck-item{
+  width:100%;text-align:left;background:#f2f2f7;border-radius:18px;
+  padding:16px 18px;display:flex;align-items:center;gap:14px;border:none
+}
+.deck-item:active{opacity:.7}
+.deck-meta{flex:1;min-width:0}
+.deck-name{font-size:18px;font-weight:600;letter-spacing:-.01em}
+.deck-info{font-size:14px;color:#888;margin-top:2px}
+.deck-bar{height:3px;border-radius:2px;background:#ddd;margin-top:10px;overflow:hidden}
+.deck-bar i{display:block;height:100%;background:#007AFF;border-radius:2px}
+.deck-due{flex:none;min-width:32px;height:26px;padding:0 8px;border-radius:13px;font-size:13px;font-weight:600;background:rgba(0,122,255,.1);color:#007AFF;display:grid;place-items:center}
+.deck-due.zero{background:#e5e5ea;color:#aaa}
+
+.home-btns{margin-top:22px;display:flex;flex-direction:column;gap:10px}
+.btn-blue{width:100%;min-height:56px;border-radius:999px;background:#007AFF;color:#fff;font-size:17px;font-weight:600;border:none;cursor:pointer;letter-spacing:-.01em}
+.btn-blue:active{opacity:.82}
+.btn-blue:disabled{opacity:.38;pointer-events:none}
+.btn-plain{width:100%;min-height:50px;border-radius:999px;background:#f2f2f7;color:#111;font-size:17px;font-weight:500;border:none;cursor:pointer}
+.btn-plain:active{opacity:.7}
+
+/* ══════════════════════════════════════
+   STUDY
+   Layout: nav + card + gap + bottom
+   Card: exactly 416px tall, 10px side margin
+══════════════════════════════════════ */
+#study{
+  background:#fff;
+  padding:max(env(safe-area-inset-top),56px) 10px calc(env(safe-area-inset-bottom) + 20px);
+  position:relative;
+  flex:1;
+}
+
+/* Grey radial vignette — only below the card */
+#study::after{
+  content:"";position:absolute;
+  left:0;right:0;bottom:0;
+  height:55%;
+  background:radial-gradient(ellipse 110% 75% at 50% 100%, #E2E2EA 0%, transparent 65%);
+  pointer-events:none;z-index:0;
+}
+
+/* Nav bar */
+.s-bar{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:16px;position:relative;z-index:2;flex:none;
+}
+
+/* ─────────────────────────────────────
+   LIQUID GLASS — iOS 27 surface token
+   Used on: back button, Skip, Speaker,
+   and the selected rating thumb only.
+─────────────────────────────────────*/
+.glass{
+  background:rgba(255,255,255,0.52);
+  -webkit-backdrop-filter:blur(28px) saturate(1.9) brightness(1.10);
+          backdrop-filter:blur(28px) saturate(1.9) brightness(1.10);
+  /* glass edge — bright top border mimics refraction */
+  border:1px solid rgba(255,255,255,0.86);
+  box-shadow:
+    /* specular catch-light along top */
+    inset 0 1.5px 0 rgba(255,255,255,0.95),
+    /* subtle base shadow under bottom edge */
+    inset 0 -1px 0 rgba(0,0,0,0.04),
+    /* soft lift shadow */
+    0 2px 10px rgba(0,0,0,0.10),
+    0 1px 2px rgba(0,0,0,0.06);
+}
+.glass:active{
+  background:rgba(208,208,216,0.68);
+}
+
+.back-circle{
+  flex:none;width:36px;height:36px;border-radius:50%;
+  display:grid;place-items:center;color:#111;
+}
+
+.progress-track{flex:1;height:4px;border-radius:2px;background:#E5E5EA;overflow:hidden}
+.progress-fill{height:100%;background:#007AFF;border-radius:2px;transition:width .35s ease}
+.s-count{flex:none;font-size:15px;color:#AEAEB2;font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
+
+/* ── Card ──
+   From Figma: W 370, H 416 (Hug),
+   padding 24/24/40/24, radius 34, drop shadow
+*/
+.card{
+  width:100%; /* 370px within 390px viewport = 10px sides */
+  height:416px;
+  border-radius:34px;
+  background:#fff;
+  box-shadow:
+    0 4px 24px rgba(0,0,0,.08),
+    0 1px 3px rgba(0,0,0,.05);
+  padding:24px 24px 40px;
+  position:relative;z-index:2;
+  flex:none;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+
+.card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;flex:none;
+}
+.card-lang{font-size:15px;color:#8E8E93;font-weight:400}
+
+/* Skip — glass pill */
+.skip-pill{
+  padding:7px 18px;border-radius:999px;
+  font-size:15px;font-weight:500;color:#111;
+}
+/* Speaker — glass circle */
+.speaker-circle{
+  width:36px;height:36px;border-radius:50%;
+  display:grid;place-items:center;color:#3C3C43;
+}
+
+/* Card body fills remaining 416 - header - padding */
+.card-body{flex:1;display:flex;flex-direction:column;min-height:0;}
+#q-face{display:flex;flex-direction:column;flex:1;min-height:0}
+#a-face{display:flex;flex-direction:column;flex:1;min-height:0}
+#q-face[hidden],#a-face[hidden]{display:none!important}
+
+/* Question text */
+.q-text{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+  font-size:34px;font-weight:700;
+  line-height:1.15;letter-spacing:-.024em;
+  margin:0 0 20px;color:#111;flex:none;
+  white-space:pre-line;
+}
+.q-text.long{font-size:28px;}
+.q-text.vlong{font-size:22px;}
+
+/* Typed answer inside card */
+#ans-field{
+  width:100%;border:none;outline:none;background:transparent;resize:none;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+  font-size:28px;font-weight:600;
+  line-height:1.22;letter-spacing:-.02em;
+  color:#C7C7CC;caret-color:#007AFF;
+  padding:0;flex:1;min-height:0;
+}
+#ans-field::placeholder{
+  color:#D1D1D6;font-weight:400;font-size:20px;
+}
+
+/* Answer face */
+.typed-ans{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+  font-size:28px;font-weight:600;
+  line-height:1.2;letter-spacing:-.022em;
+  color:#C7C7CC;margin:0 0 6px;flex:none;
+  white-space:pre-line;
+}
+.correct-ans{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+  font-size:34px;font-weight:700;
+  line-height:1.15;letter-spacing:-.024em;
+  color:#111;margin:0 0 16px;flex:none;
+  white-space:pre-line;
+}
+.correct-ans.long{font-size:28px}
+.correct-ans.vlong{font-size:22px}
+
+/* Verdict pills */
+.verdict{
+  display:inline-block;padding:7px 16px;border-radius:999px;
+  font-size:15px;font-weight:600;flex:none;align-self:flex-start;
+}
+.v-ok  {background:rgba(52,199,89,.13);  color:#1A9C37}
+.v-near{background:rgba(255,149,0,.13);  color:#C07800}
+.v-bad {background:rgba(255,59,48,.13);   color:#D4322A}
+
+.card-note{font-size:14px;color:#AEAEB2;margin-top:12px;line-height:1.5;flex:none}
+
+/* Gap + bottom */
+.card-gap{flex:1;min-height:16px;z-index:0}
+.bottom-ui{position:relative;z-index:2;flex:none;display:flex;flex-direction:column;gap:12px}
+
+/* ─────────────────────────────────────
+   RATING SEGMENTED CONTROL
+   Tray = solid light grey (no glass)
+   Active thumb = glass (floats above tray)
+─────────────────────────────────────*/
+.rating-ctrl{
+  background:#EBEBF0;
+  border-radius:999px;
+  padding:4px;
+  display:flex;gap:0;
+}
+.r-btn{
+  flex:1;min-height:56px;border-radius:999px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  background:transparent;border:none;cursor:pointer;
+}
+.r-btn.active{
+  background:rgba(255,255,255,0.80);
+  -webkit-backdrop-filter:blur(24px) saturate(1.8) brightness(1.06);
+          backdrop-filter:blur(24px) saturate(1.8) brightness(1.06);
+  border:1px solid rgba(255,255,255,0.88);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.96),
+    inset 0 -1px 0 rgba(0,0,0,0.03),
+    0 1px 4px rgba(0,0,0,0.10),
+    0 3px 12px rgba(0,0,0,0.08);
+}
+.r-num{
+  width:24px;height:24px;border-radius:50%;
+  border:1.5px solid #8E8E93;
+  display:grid;place-items:center;
+  font-size:13px;font-weight:600;color:#8E8E93;
+}
+.r-btn.active .r-num{border-color:#007AFF;color:#007AFF}
+.r-label{font-size:12px;font-weight:500;color:#8E8E93}
+.r-btn.active .r-label{color:#007AFF}
+
+/* ══════════════════════════════════════
+   DONE
+══════════════════════════════════════ */
+#done{
+  background:#fff;
+  padding:max(env(safe-area-inset-top),52px) 20px calc(env(safe-area-inset-bottom)+24px);
+  justify-content:space-between;flex:1;
+}
+.done-body{flex:1;display:flex;flex-direction:column;justify-content:center}
+.done-score{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+  font-size:80px;font-weight:700;letter-spacing:-.04em;line-height:1;margin:0 0 14px
+}
+.done-title{font-size:24px;font-weight:700;letter-spacing:-.015em;margin:0 0 8px}
+.done-sub{font-size:17px;color:#888;margin:0}
+
+/* ══════════════════════════════════════
+   PROGRESS
+══════════════════════════════════════ */
+#progress{
+  background:#fff;
+  padding:max(env(safe-area-inset-top),52px) 20px calc(env(safe-area-inset-bottom)+24px);
+  overflow-y:auto;flex:1;
+}
+.prog-bar{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.prog-bar h2{margin:0;font-size:24px;font-weight:700;flex:1;letter-spacing:-.018em}
+.heat-wrap{display:flex;gap:3px;overflow-x:auto;padding:4px 0 8px;-webkit-overflow-scrolling:touch}
+.heat-col{display:flex;flex-direction:column;gap:3px}
+.heat-cell{width:13px;height:13px;border-radius:3px;background:#e5e5ea;flex:none}
+.heat-cell.l1{background:rgba(0,122,255,.25)}
+.heat-cell.l2{background:rgba(0,122,255,.5)}
+.heat-cell.l3{background:rgba(0,122,255,.75)}
+.heat-cell.l4{background:#007AFF}
+.heat-legend{display:flex;align-items:center;gap:5px;color:#aaa;font-size:13px;margin-top:4px}
+table{width:100%;border-collapse:collapse;margin-top:18px}
+th,td{text-align:left;padding:11px 0;border-bottom:1px solid #f0f0f0;font-size:16px}
+th{font-size:13px;color:#aaa;font-weight:500}
+.tr{text-align:right;font-variant-numeric:tabular-nums}
+.empty-msg{color:#aaa;font-size:15px;margin-top:18px}
+
+/* ══════════════════════════════════════
+   IMPORT SHEET
+══════════════════════════════════════ */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.28);display:none;z-index:9}
+.scrim.on{display:block}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:10;
+  background:#fff;border-radius:24px 24px 0 0;
+  padding:8px 20px calc(env(safe-area-inset-bottom)+20px);
+  transform:translateY(101%);transition:transform .28s cubic-bezier(.32,.72,0,1);
+  max-height:88dvh;overflow-y:auto;max-width:640px;margin:0 auto
+}
+.sheet.on{transform:translateY(0)}
+.grab{width:36px;height:5px;border-radius:3px;background:#e5e5ea;margin:0 auto 14px}
+.sheet h3{margin:0 0 4px;font-size:20px;font-weight:700;letter-spacing:-.015em}
+.sheet p{margin:0 0 16px;color:#888;font-size:15px;line-height:1.5}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;color:#888;margin-bottom:6px}
+.field input,.field textarea{
+  width:100%;padding:13px 14px;border-radius:14px;
+  background:#f2f2f7;border:1.5px solid transparent;outline:none;font-size:16px;font-family:inherit
+}
+.field textarea{min-height:110px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.5}
+.field input:focus,.field textarea:focus{border-color:#007AFF;background:#fff}
+.err{color:#ff3b30;font-size:14px;margin:-6px 0 12px}
+.sheet-btns{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="device">
+
+<!-- ══ HOME ══ -->
+<main id="home" class="screen on">
+  <div class="brand">
+    <h1>Ale</h1>
+    <p id="home-sub">Allez, let's practice.</p>
+  </div>
+  <div class="today-row">
+    <div class="today-stat"><b id="t-due">0</b><span>due today</span></div>
+    <div class="today-stat"><b id="t-right">0</b><span>right today</span></div>
+    <div class="today-stat"><b id="t-total">0</b><span>cards</span></div>
+  </div>
+  <div class="deck-list" id="deck-list"></div>
+  <div class="home-btns">
+    <button class="btn-blue" id="btn-all">Allez</button>
+    <button class="btn-plain" id="btn-add">Add a deck</button>
+    <button class="btn-plain" id="btn-prog" style="color:#888;font-size:15px;min-height:40px">View progress</button>
+  </div>
+</main>
+
+<!-- ══ STUDY ══ -->
+<main id="study" class="screen">
+
+  <!-- nav bar -->
+  <div class="s-bar">
+    <button class="back-circle glass" id="btn-quit">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0"></div></div>
+    <span class="s-count" id="s-count">1/20</span>
+  </div>
+
+  <!-- card -->
+  <div class="card" id="the-card">
+    <div class="card-header">
+      <span class="card-lang" id="card-lang">English</span>
+      <button class="skip-pill glass" id="btn-skip">Skip</button>
+      <button class="speaker-circle glass" id="btn-speak" hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5 6 9H3v6h3l5 4V5z"/>
+          <path d="M16 9a4 4 0 0 1 0 6M19.07 4.93a10 10 0 0 1 0 14.14"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- question face -->
+    <div class="card-body">
+    <div id="q-face">
+      <p class="q-text" id="q-text"></p>
+      <textarea id="ans-field" rows="2"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+        placeholder="Type your answer…"></textarea>
+    </div>
+
+    <!-- answer face (hidden until revealed) -->
+    <div id="a-face" hidden>
+      <p class="typed-ans"   id="typed-ans"   hidden></p>
+      <p class="correct-ans" id="correct-ans"></p>
+      <span class="verdict"  id="verdict-pill"></span>
+      <p class="card-note"   id="card-note"   hidden></p>
+    </div>
+    </div>
+  </div>
+
+  <!-- gap pushes bottom UI down -->
+  <div class="card-gap"></div>
+
+  <!-- bottom UI -->
+  <div class="bottom-ui">
+    <!-- Answer button (question side) -->
+    <button class="btn-blue" id="btn-answer">Answer</button>
+
+    <!-- Rating + Next (answer side, hidden until reveal) -->
+    <div id="reveal-ui" hidden>
+      <div class="rating-ctrl" style="margin-bottom:12px">
+        <button class="r-btn" data-rate="easy"     id="r-easy">    <span class="r-num">1</span><span class="r-label">Easy</span></button>
+        <button class="r-btn" data-rate="learning" id="r-learning"><span class="r-num">2</span><span class="r-label">Learning</span></button>
+        <button class="r-btn" data-rate="hard"     id="r-hard">    <span class="r-num">3</span><span class="r-label">Hard</span></button>
+      </div>
+      <button class="btn-blue" id="btn-next">Next</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══ DONE ══ -->
+<main id="done" class="screen">
+  <div class="done-body">
+    <p class="done-score" id="done-score">0/0</p>
+    <p class="done-title" id="done-title">Great session.</p>
+    <p class="done-sub"   id="done-sub"></p>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <button class="btn-blue" id="btn-done">Done</button>
+  </div>
+</main>
+
+<!-- ══ PROGRESS ══ -->
+<main id="progress" class="screen" style="overflow-y:auto">
+  <div class="prog-bar">
+    <button class="back-circle glass" id="btn-prog-back">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <h2>Progress</h2>
+  </div>
+  <p id="prog-sub" style="margin:0 0 14px;color:#888;font-size:15px"></p>
+  <div class="heat-wrap" id="heat"></div>
+  <div class="heat-legend" style="margin-top:6px">
+    <span>less</span>
+    <i class="heat-cell"></i><i class="heat-cell l1"></i><i class="heat-cell l2"></i><i class="heat-cell l3"></i><i class="heat-cell l4"></i>
+    <span>more</span>
+  </div>
+  <table id="prog-table">
+    <thead><tr><th>Day</th><th class="tr">Correct</th><th class="tr">Total</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <p class="empty-msg" id="prog-empty" hidden>No sessions yet. Finish a deck and it'll show up here.</p>
+  <div style="margin-top:24px">
+    <button class="btn-plain" id="btn-reset" style="color:#ff3b30">Reset all progress</button>
+  </div>
+</main>
+
+<!-- ══ IMPORT SHEET ══ -->
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet">
+  <div class="grab"></div>
+  <h3>Add a deck</h3>
+  <p>First row is the header — the first two column names become the labels on the card.</p>
+  <div class="field">
+    <label>Deck name</label>
+    <input id="deck-name" type="text" placeholder="Dutch Verbs">
+  </div>
+  <div class="field">
+    <label>CSV content</label>
+    <textarea id="csv-text" placeholder="English,Dutch,Hint,Note&#10;Good morning,Goedemorgen,,"></textarea>
+  </div>
+  <p class="err" id="import-err" hidden></p>
+  <div class="sheet-btns">
+    <button class="btn-blue"  id="btn-save">Add deck</button>
+    <button class="btn-plain" id="btn-file">Choose .csv file</button>
+    <button class="btn-plain" id="btn-close-sheet">Cancel</button>
+  </div>
+  <input type="file" id="file-inp" accept=".csv,text/csv" hidden>
+</div>
+
+<script>
+/* ─── Seed data ─── */
+const SEED={
+  phrases:{name:"Phrases",lang:"nl-NL",csv:`English,Dutch,Hint,Note
+What's your name?,Hoe heet jij?,,
+My name is Rodrigo,Mijn naam is Rodrigo,,
+Where do you live?,Waar woon jij?,,
+I live in Etterbeek,Ik woon in Etterbeek,,
+What country are you from?,Uit welk land kom jij?,,
+I'm from Brazil,Ik kom uit Brazilië,,
+What languages do you speak?,Welke talen spreek jij?,,
+How do you get to work?,Hoe kom jij naar het werk?,,
+How do you get to school?,Hoe kom jij naar school?,,
+Are you married?,Ben jij getrouwd?,,
+I am married,Ik ben getrouwd,,
+Do you have children?,Heb jij kinderen?,,
+How many children do you have?,Hoeveel kinderen heb jij?,,
+"No, I don't have any children","Nee, ik heb geen kinderen.",,
+How are you?,Hoe is't?,,
+"Good, and you?","Goed, en met jou?",,
+Good too. Thank you!,Ook goed. Dank u!,,
+Thank you very much,Dank u wel,,
+You're welcome,Graag gedaan,,
+Pardon?,Wablief?,,
+How do you spell that?,Hoe spel het?,,
+Repeat,Herhaal,,
+Important,Belangrijk,,
+I don't know,Ik weet het niet,,
+Open your book,Doe je boek open,,
+Close your book,Doe je boek dicht,,
+Take note,Noteer,,
+Can I borrow your pen?,Mag ik jouw pen lenen?,,
+I'm done!,Ik ben klaar,,
+Can you spell that?,Kan je dat spellen?,,
+"Excuse me, may I ask something?","Excuseer, mag ik iets vragen?",,
+What is… ?,Wat is … ?,,
+How do you say … in Dutch?,Hoe zeg je … in het Nederlands?,,
+I don't understand it,Ik begrijp het niet,,
+What time is it?,Hoe laat is het?,,
+What time does the plane to Venice leave?,Hoe laat vertrekt het vliegtuig naar Venetië?,,
+How much does the book cost?,Hoeveel kost het boek?,,
+How much do the pens cost?,Hoeveel kosten de balpennen?,,
+Is it correct?,Klopt het?,,
+"Yes, it's correct","Ja, het klopt",,
+"No, it isn't correct","Nee, het klopt niet",,
+My son,Mijn zoon,,
+My daughter,Mijn dochter,,
+My sister,Mijn zus,,
+What's your name? • My name is Rodrigo.,Hoe heet jij? • Ik heet Rodrigo.,,
+I'm Rodrigo. Who are you? • I'm Jan.,Ik ben Rodrigo. Wie ben jij? • Ik ben Jan.,,
+Hello! • Good morning • Good afternoon • Good evening • Good day / Hello • Goodbye / See you,Hallo! • Goeiemorgen • Goeiemiddag • Goeieavond • Goeiedag • Tot ziens,,
+"Good morning, I'm Rodrigo.","Goeiemorgen, ik ben Rodrigo.",,
+"Hi Jan, I'm Rodrigo.","Dag Jan, ik ben Rodrigo.",,
+Pardon? / Sorry?,Wablief?,,
+What did you say?,Wat zeg je?,,
+What is your first name? • My first name is Rodrigo.,Wat is je voornaam? • Mijn voornaam is Rodrigo.,,
+How do you spell that?,Hoe spel je dat?,,
+What is your last name? • My last name is Varejao.,Wat is je familienaam? • Mijn familienaam is Varejao.,,
+"Yes, that is my last name.","Ja, dat is mijn familienaam.",,
+What is his last name? • His last name is Nowak.,Wat is zijn familienaam? • Zijn familienaam is Nowak.,,
+What is her first name? • Her first name is Asuka.,Wat is haar voornaam? • Haar voornaam is Asuka.,,
+"Hi Tomas, how are you? • Good, and you? • Good too!","Dag Tomas, hoe gaat het? • Goed, en met jou? • Ook goed!",,
+How's it going? • Very good!,Hoe is 't? • Heel goed!,,
+What country are you from? • From Brazil. • I'm from Brazil. • And you?,Uit welk land kom jij? • Uit Brazilië. • Ik kom uit Brazilië. • En jij?,,
+Ana is from Brazil.,Ana komt uit Brazilië.,,
+What language do you speak? • I speak Portuguese and English.,Welke taal spreek jij? • Ik spreek Portugees en Engels.,,
+I'm learning Dutch.,Ik leer Nederlands.,,
+Are you also learning Dutch?,Leer jij ook Nederlands?,,
+Do you speak English?,Spreek jij Engels?,,
+What language does Nathan speak?,Welke taal spreekt Nathan?,,
+What language is Mila learning?,Welke taal leert Mila?,,
+What country is Jan from?,Uit welk land komt Jan?,,
+Willems is your last name.,Willems is jouw familienaam.,,
+Rodrigo is my first name.,Rodrigo is mijn voornaam.,,
+I am a student / course participant.,Ik ben een cursist.,,
+Who are you? • I'm Rodrigo.,Wie ben jij? • Ik ben Rodrigo.,,
+Who is that? • That is Jan.,Wie is dat? • Dat is Jan.,,
+Where do you live? • I live in Brussels.,Waar woon jij? • Ik woon in Brussel.,,
+Where do you (plural) live? • We live in Ghent.,Waar wonen jullie? • Wij wonen in Gent.,,
+How do you get to school? • I come by scooter.,Hoe kom jij naar school? • Ik kom met de step.,,
+How do you get to work? • I come by car.,Hoe kom jij naar het werk? • Ik kom met de auto.,,
+How do you get to work? • On foot.,Hoe kom jij naar het werk? • Te voet.,,
+Who do you hear? • I hear a woman and a man.,Wie hoor je? • Ik hoor een vrouw en een man.,,
+Her name is Gloria. • She speaks English and Spanish. • She is from Spain.,Ze heet Gloria. • Ze spreekt Engels en Spaans. • Ze komt uit Spanje.,,
+His name is Ali. • He is from China. • He lives in Ghent.,Hij heet Ali. • Hij komt uit China. • Hij woont in Gent.,,
+How long have you lived in Belgium? • I've lived in Belgium for 7 years.,Hoelang woon jij al in België? • Ik woon al 7 jaar in België.,,
+"Are you married? • Yes, I am married.","Ben jij getrouwd? • Ja, ik ben getrouwd.",,
+"Are you (plural) married? • Yes, we are married.","Zijn jullie getrouwd? • Ja, wij zijn getrouwd.",,
+"Do you have children? • No, I don't have children.","Heb jij kinderen? • Nee, ik heb geen kinderen.",,
+"How many children do they have? • They have two children, one son and one daughter. A boy and a girl.","Hoeveel kinderen hebben zij? • Zij hebben twee kinderen, 1 zoon en 1 dochter. Een jongen en een meisje.",,
+Does she have children? • She has a daughter.,Heeft ze kinderen? • Ze heeft een dochter.,,
+"Is Asuka married? • Yes, she is married. • To whom? • She is married to Hiroto.","Is Asuka getrouwd? • Ja, zij is getrouwd. • Met wie? • Zij is getrouwd met Hiroto.",,
+"Does Andrei have children? • Yes, he has children. He has two children.","Heeft Andrei kinderen? • Ja, hij heeft kinderen. Hij heeft twee kinderen.",,
+Where do you learn Dutch? • I learn Dutch at the CVO.,Waar leer jij Nederlands? • Ik leer Nederlands aan het CVO.,,
+How do you go to school? • I walk to school.,Hoe ga jij naar school? • Ik ga te voet naar school.,,
+How long have you lived in Belgium? • I've lived in Belgium for seven years. • Which city do you want to visit? • I want to visit Bruges.,Hoelang woon jij al in België? • Ik woon al zeven jaar in België. • Welke stad wil jij bezoeken? • Ik wil Brugge bezoeken.,,
+Public transport in Brussels is good.,Het openbaar vervoer in Brussel is goed.,,
+I buy a public transport pass.,Ik koop een abonnement voor het openbaar vervoer.,,
+"Do you (plural) have children? • No, we don't have children.","Hebben jullie kinderen? • Nee, wij hebben geen kinderen.",,
+"Do Maria and Paulo have children? • Yes, they have a son.","Hebben Maria en Paulo kinderen? • Ja, zij hebben een zoon.",,
+How many children do you have? • I have two children.,Hoeveel kinderen heb jij? • Ik heb twee kinderen.,,
+How many languages do you speak? • I speak three languages.,Hoeveel talen spreek jij? • Ik spreek drie talen.,,
+How many pens do you have? • I have eight pens.,Hoeveel balpennen heb jij? • Ik heb acht balpennen.,,
+What's the weather like? • The weather is nice. • It's sunny.,Wat voor weer is het? • Het is mooi weer. • Het is zonnig.,,
+What's the weather like? • It's cloudy.,Wat voor weer is het? • Het is bewolkt.,,
+What's the weather like? • It's raining.,Wat voor weer is het? • Het regent.,,
+What's the weather like? • It's freezing.,Wat voor weer is het? • Het vriest.,,
+What's the temperature? • It's 22 degrees.,Hoeveel graden is het? • Het is 22 graden.,,
+How much does the book cost? • The book costs twenty euros.,Hoeveel kost het boek? • Het boek kost twintig euro.,,
+How much do the pens cost? • The pens cost three euros and fifty cents.,Hoeveel kosten de balpennen? • De balpennen kosten drie euro en een half.,,
+What time is it? • It's four o'clock.,Hoe laat is het? • Het is vier uur.,,
+What time is it? • It's quarter past eleven.,Hoe laat is het? • Het is kwart over elf.,,
+What time is it? • It's ten past three.,Hoe laat is het? • Het is tien over drie.,,
+What time is it? • It's twenty to two.,Hoe laat is het? • Het is twintig voor twee.,,
+What time is it? • It's half past six.,Hoe laat is het? • Het is half zeven.,,
+The train to Kortrijk leaves at five past nine.,De trein naar Kortrijk vertrekt om vijf over negen.,,
+The train to Leuven leaves at eight past nine.,De trein naar Leuven vertrekt om acht over negen.,,
+The train to Antwerp-Central leaves at quarter past ten.,De trein naar Antwerpen-Centraal vertrekt om kwart over tien.,,
+The train to Brussels-South leaves at twenty past ten.,De trein naar Brussel-Zuid vertrekt om twintig over tien.,,
+The train to Genk leaves at five to ten.,De trein naar Genk vertrekt om vijf voor tien.,,
+"What time is it, please?","Hoe laat is het, alstublieft?",,
+It's 7 o'clock in the morning.,Het is 7 uur 's morgens.,,
+It's 8 o'clock in the evening.,Het is 8 uur 's avonds.,,
+It's 1 o'clock at night.,Het is 1 uur 's nachts.,,
+It's 3 o'clock in the afternoon.,Het is 3 uur 's middags.,,
+I'm going to Prague by train. • What time does your train leave? • At seven in the evening. • Have a good trip!,Ik ga met de trein naar Praag. • Hoe laat vertrekt je trein? • Om zeven uur 's avonds. • Goede reis!,,
+What time do you leave for work?,Hoe laat vertrek je naar het werk?,,
+What time do you come home?,Hoe laat kom je thuis?,,
+Pardon? What did you say?,Wablief? Wat zegt u?,,
+How old are you? • I am thirty-six years old.,Hoe oud ben jij? • Ik ben zesendertig jaar.,,
+How old is Maria? • She is one hundred years old.,Hoe oud is Maria? • Zij is honderd jaar.,,
+When is your birthday? • My birthday is on April 12th.,Wanneer verjaar jij? • Ik verjaar op twaalf april.,,
+When is your birthday? • My birthday is on April 12th.,Wanneer ben je jarig? • Ik ben jarig op twaalf april.,,
+In which month is your birthday? • My birthday is in April.,In welke maand verjaar je? • Ik verjaar in april.,,
+In which season is your birthday? • My birthday is in spring.,In welk seizoen verjaar je? • Ik verjaar in de lente.,,
+Happy birthday!,Gelukkige verjaardag!,,
+date of birth,geboortedatum,,
+Are you … years old?,Ben jij … jaar?,,
+The first and the last.,De eerste en de laatste.,,
+Spring,De lente,,
+Summer,De zomer,,
+Autumn / Fall,De herfst,,
+Winter,De winter,,
+Who is the oldest in the group?,Wie is de oudste van de groep?,,
+Who is the youngest?,Wie is de jongste?,,
+How old are you?,Hoe oud ben jij?,,
+How old is he?,Hoe oud is hij?,,
+How old is she?,Hoe oud is zij?,,
+Cristina's son is nine years old.,Cristina's zoon is negen jaar.,,
+Nadia's daughter is twelve years old.,Nadia's dochter is twaalf jaar.,,
+I am thirty-six.,Ik ben zesendertig.,,
+Cristina is forty-six years old.,Cristina is zesenveertig jaar.,,
+Soha is thirty-two.,Soha is tweeëndertig.,,
+Nadia is forty-three.,Nadia is drieënveertig.,,
+Cristina is older and Soha is younger.,Cristina is ouder en Soha is jonger.,,
+Soha's son is three years old.,Soha's zoon is drie jaar.,,
+Autumn begins on September 21st.,De herfst begint op eenentwintig september.,,
+"I'm sorry, Chantal, I have to leave at 11:20.","Het spijt me, Chantal, ik moet om 11:20 vertrekken.",,
+I think John does the shopping on Saturday.,Ik denk dat John op zaterdag boodschappen doet.,,
+I think Mahmoud plays padel on Friday.,Ik denk dat Mahmoud op vrijdag padel speelt.,,`},
+  numbers:{name:"Numbers",lang:"nl-NL",csv:`Front,Back,Hint,Note
+0,nul,,
+1,één,,
+2,twee,,
+3,drie,,
+4,vier,,
+5,vijf,,
+6,zes,,
+7,zeven,,
+8,acht,,
+9,negen,,
+10,tien,,
+11,elf,,
+12,twaalf,,
+13,dertien,,
+14,veertien,,
+15,vijftien,,
+16,zestien,,
+17,zeventien,,
+18,achttien,,
+19,negentien,,
+20,twintig,,
+21,eenentwintig | éénentwintig,,
+22,tweeëntwintig,,
+30,dertig,,
+40,veertig,,
+50,vijftig,,
+60,zestig,,
+70,zeventig,,
+80,tachtig,,
+90,negentig,,
+100,honderd,,
+200,tweehonderd,,
+1000,duizend,,`}
+};
+
+/* ─── Storage ─── */
+const SK={p:"ale:prog:v1",s:"ale:stats:v1",d:"ale:decks:v1"};
+const ld=(k,fb)=>{try{const r=localStorage.getItem(k);return r?JSON.parse(r):fb}catch{return fb}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
+let prog=ld(SK.p,{}), stats=ld(SK.s,{}), custom=ld(SK.d,{});
+
+/* ─── CSV ─── */
+function parseCSV(txt){
+  const rows=[];let row=[],cell="",q=false;
+  const s=txt.replace(/\r\n?/g,"\n");
+  for(let i=0;i<s.length;i++){
+    const c=s[i];
+    if(q){if(c==='"'){if(s[i+1]==='"'){cell+='"';i++}else q=false}else cell+=c}
+    else if(c==='"')q=true;
+    else if(c===','){row.push(cell);cell=""}
+    else if(c==='\n'){row.push(cell);rows.push(row);row=[];cell=""}
+    else cell+=c;
+  }
+  row.push(cell);rows.push(row);
+  return rows.filter(r=>r.some(v=>v.trim()));
+}
+function hid(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))>>>0;return"c"+h.toString(36)}
+function buildDeck(id,name,csv,lang){
+  const rows=parseCSV(csv);
+  if(rows.length<2)throw new Error("Needs a header + at least one row.");
+  const head=rows[0].map(h=>h.trim());
+  const cards=[];const seen=new Set();
+  for(let i=1;i<rows.length;i++){
+    const r=rows[i];
+    const f=(r[0]||"").trim(),b=(r[1]||"").trim();
+    if(!f||!b)continue;
+    const cid=hid(id+"::"+f);
+    if(seen.has(cid))continue;seen.add(cid);
+    cards.push({id:cid,front:f,answers:b.split("|").map(a=>a.trim()).filter(Boolean),back:b,hint:(r[2]||"").trim(),note:(r[3]||"").trim()});
+  }
+  if(!cards.length)throw new Error("No usable rows found.");
+  return{id,name,fl:head[0]||"Front",bl:head[1]||"Back",lang:lang||"nl-NL",cards};
+}
+let DECKS=[];
+function rebuildDecks(){
+  DECKS=[];
+  for(const k of Object.keys(SEED)){try{DECKS.push(buildDeck(k,SEED[k].name,SEED[k].csv,SEED[k].lang))}catch{}}
+  for(const k of Object.keys(custom)){const d=custom[k];try{DECKS.push(buildDeck(k,d.name,d.csv,d.lang))}catch{}}
+}
+rebuildDecks();
+
+/* ─── Scheduling ─── */
+const IVLS=[0,1,2,4,8,16];
+const SZ=20,NC=6;
+function td(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function td_plus(n){const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+const isDue=cid=>{const p=prog[cid];return!p||p.due<=td()};
+const dueN=deck=>deck.cards.filter(c=>isDue(c.id)).length;
+const knownN=deck=>deck.cards.filter(c=>(prog[c.id]?.box||0)>=4).length;
+function buildSession(decks){
+  const due=[],fresh=[];
+  for(const dk of decks)for(const c of dk.cards){
+    const p=prog[c.id];
+    if(!p)fresh.push({c,dk});
+    else if(p.due<=td())due.push({c,dk,p});
+  }
+  due.sort((a,b)=>(a.p.box-b.p.box)||(a.p.due||"").localeCompare(b.p.due||""));
+  shuf(fresh);
+  const picked=due.slice(0,SZ);
+  const room=SZ-picked.length;
+  if(room>0)picked.push(...fresh.slice(0,Math.min(room,NC)));
+  shuf(picked);
+  return picked;
+}
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+function applyRating(cid,rating,correct){
+  const p=prog[cid]||{box:1,right:0,wrong:0};
+  let box=p.box||1;
+  const cap=correct?5:2;
+  if(rating==="hard")box=1;
+  else if(rating==="easy")box=Math.min(cap,box+2);
+  else box=Math.min(cap,box+1);
+  prog[cid]={box,due:td_plus(IVLS[box]),last:td(),right:(p.right||0)+(correct?1:0),wrong:(p.wrong||0)+(correct?0:1)};
+  sv(SK.p,prog);
+}
+function logDay(correct){
+  const t=td(),s=stats[t]||{correct:0,total:0};
+  s.total++;if(correct)s.correct++;
+  stats[t]=s;sv(SK.s,stats);
+}
+
+/* ─── Eval ─── */
+function norm(s){return s.toLowerCase().replace(/[''`´]/g,"'").replace(/[.,!?;:"""()\[\]…]/g,"").replace(/\s+/g," ").trim()}
+function lev(a,b){
+  if(a===b)return 0;const m=a.length,n=b.length;
+  if(!m)return n;if(!n)return m;
+  let prev=Array.from({length:n+1},(_,i)=>i);
+  for(let i=1;i<=m;i++){
+    const cur=[i];
+    for(let j=1;j<=n;j++)cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    prev=cur;
+  }
+  return prev[n];
+}
+function judge(given,answers){
+  const g=norm(given);if(!g)return{v:"bad",m:answers[0]};
+  let best={d:Infinity,a:answers[0]};
+  for(const a of answers){const d=lev(g,norm(a));if(d<best.d)best={d,a}}
+  if(best.d===0)return{v:"ok",m:best.a};
+  if(best.d<=(norm(best.a).length>8?2:1))return{v:"near",m:best.a};
+  return{v:"bad",m:best.a};
+}
+
+/* ─── Speech ─── */
+let voices=[];
+function loadVoices(){try{voices=speechSynthesis.getVoices()||[]}catch{}}
+if("speechSynthesis"in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+function speak(text,lang){
+  if(!("speechSynthesis"in window))return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);u.lang=lang;
+    const v=voices.find(v=>v.lang&&v.lang.replace("_","-").toLowerCase()===lang.toLowerCase())
+           ||voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith(lang.slice(0,2).toLowerCase()));
+    if(v)u.voice=v;u.rate=.92;speechSynthesis.speak(u);
+  }catch{}
+}
+
+/* ─── Navigation ─── */
+const $=id=>document.getElementById(id);
+function show(id){["home","study","done","progress"].forEach(s=>$(s).classList.toggle("on",s===id));window.scrollTo(0,0)}
+
+/* ─── Home ─── */
+function renderHome(){
+  const t=stats[td()]||{correct:0,total:0};
+  let due=0,total=0;
+  for(const d of DECKS){due+=dueN(d);total+=d.cards.length}
+  $("t-due").textContent=due;
+  $("t-right").textContent=t.correct;
+  $("t-total").textContent=total;
+  $("btn-all").disabled=due===0;
+  $("btn-all").textContent=due===0?"Nothing due — all caught up":"Allez";
+  $("home-sub").textContent=DECKS.length?(due?"Allez, let's practice.":"Come back tomorrow — or study anyway."):"Add a deck to begin.";
+  const list=$("deck-list");list.innerHTML="";
+  for(const deck of DECKS){
+    const d=dueN(deck),k=knownN(deck),pct=Math.round(k/deck.cards.length*100);
+    const btn=document.createElement("button");btn.className="deck-item";
+    btn.innerHTML=`<div class="deck-meta"><div class="deck-name"></div><div class="deck-info"></div><div class="deck-bar"><i style="width:${pct}%"></i></div></div><span class="deck-due ${d?"":"zero"}">${d}</span>`;
+    btn.querySelector(".deck-name").textContent=deck.name;
+    btn.querySelector(".deck-info").textContent=`${deck.cards.length} cards · ${k} known · ${deck.fl} → ${deck.bl}`;
+    btn.addEventListener("click",()=>startSession([deck]));
+    list.appendChild(btn);
+  }
+}
+
+/* ─── Study ─── */
+let queue=[],idx=0,rightN=0,revealed=false,cur=null,lastJ=null,selRate=null;
+
+function startSession(decks){
+  queue=buildSession(decks);
+  if(!queue.length){const all=decks.flatMap(d=>d.cards.map(c=>({c,dk:d})));shuf(all);queue=all.slice(0,SZ)}
+  idx=0;rightN=0;show("study");renderCard();
+}
+
+function renderCard(){
+  revealed=false;lastJ=null;selRate=null;
+  cur=queue[idx];
+  const{c,dk}=cur;
+
+  // nav
+  $("prog-fill").style.width=(idx/queue.length*100)+"%";
+  $("s-count").textContent=(idx+1)+"/"+queue.length;
+
+  // card header — question side
+  $("card-lang").textContent=dk.fl;
+  $("btn-skip").hidden=false;
+  $("btn-speak").hidden=true;
+
+  // show question face
+  $("q-face").hidden=false;
+  $("a-face").hidden=true;
+
+  // clear answer face content fully
+  $("typed-ans").hidden=true;
+  $("typed-ans").textContent="";
+  const ca=$("correct-ans");
+  ca.textContent="";
+  ca.classList.remove("long","vlong");
+  $("verdict-pill").className="verdict";
+  $("verdict-pill").textContent="";
+  $("card-note").hidden=true;
+  $("card-note").textContent="";
+
+  // reset rating
+  document.querySelectorAll(".r-btn").forEach(b=>b.classList.remove("active"));
+
+  // question text — convert • separators to line breaks
+  const qt=$("q-text");
+  qt.textContent=c.front.replace(/ • /g,"\n");
+  qt.classList.remove("long","vlong");
+  qt.classList.toggle("long", c.front.length > 40);
+  qt.classList.toggle("vlong", c.front.length > 65);
+
+  // input
+  const inp=$("ans-field");
+  inp.value="";inp.style.height="auto";
+  inp.placeholder="Type the "+dk.bl.toLowerCase()+"…";
+
+  // bottom UI: show Answer, hide reveal-ui
+  $("btn-answer").hidden=false;
+  $("reveal-ui").hidden=true;
+
+  setTimeout(()=>inp.focus(),80);
+}
+
+function reveal(){
+  if(revealed)return;
+  const{c,dk}=cur;
+  const given=$("ans-field").value.trim();
+  revealed=true;
+
+  const j=given?judge(given,c.answers):{v:"bad",m:c.answers[0]};
+  lastJ=j;
+  const correct=j.v!=="bad";
+  if(correct)rightN++;
+  logDay(correct);
+
+  // flip card header
+  $("card-lang").textContent=dk.bl;
+  $("btn-skip").hidden=true;
+  $("btn-speak").hidden=false;
+
+  // explicitly clear question face content before hiding
+  $("ans-field").value="";
+  $("ans-field").style.height="auto";
+
+  // show answer face
+  $("q-face").hidden=true;
+  $("a-face").hidden=false;
+
+  // populate answer face
+  if(given&&j.v!=="ok"){
+    $("typed-ans").textContent=given.replace(/ • /g,"\n");
+    $("typed-ans").hidden=false;
+  }
+  const ca=$("correct-ans");
+  const answerText=c.answers[0].replace(/ • /g,"\n");
+  ca.textContent=answerText;
+  ca.classList.remove("long","vlong");
+  ca.classList.toggle("long", c.answers[0].length > 40);
+  ca.classList.toggle("vlong", c.answers[0].length > 65);
+
+  const vp=$("verdict-pill");
+  if(j.v==="ok"){vp.className="verdict v-ok";vp.textContent="Correct"}
+  else if(j.v==="near"){vp.className="verdict v-near";vp.textContent="Almost right"}
+  else{vp.className="verdict v-bad";vp.textContent=given?"Not this time":"Skipped"}
+
+  if(c.note){$("card-note").textContent=c.note;$("card-note").hidden=false}
+
+  // default rating selection
+  const def=j.v==="ok"?"easy":j.v==="near"?"learning":"hard";
+  setRate(def);
+
+  // bottom UI
+  $("btn-answer").hidden=true;
+  $("reveal-ui").hidden=false;
+}
+
+function setRate(r){
+  selRate=r;
+  document.querySelectorAll(".r-btn").forEach(b=>b.classList.toggle("active",b.dataset.rate===r));
+}
+
+function advance(){
+  applyRating(cur.c.id,selRate||"learning",lastJ&&lastJ.v!=="bad");
+  idx++;
+  if(idx>=queue.length)finish();else renderCard();
+}
+
+function finish(){
+  const t=stats[td()]||{correct:0,total:0};
+  $("done-score").textContent=rightN+"/"+queue.length;
+  $("done-title").textContent=rightN===queue.length?"Perfect round.":rightN>=queue.length*.7?"Solid session.":"The tricky ones come back sooner.";
+  $("done-sub").textContent=t.correct+" correct today across "+t.total+" cards.";
+  show("done");renderHome();
+}
+
+/* ─── Progress ─── */
+function renderProgress(){
+  const days=Object.keys(stats).sort();
+  const tot=days.reduce((n,d)=>n+stats[d].correct,0);
+  $("prog-sub").textContent=days.length?`${tot} correct answers over ${days.length} day${days.length!==1?"s":""}.`:"";
+  $("prog-empty").hidden=days.length>0;
+  $("prog-table").hidden=days.length===0;
+  const heat=$("heat");heat.innerHTML="";
+  const end=new Date(),start=new Date();
+  start.setDate(end.getDate()-(15*7-1));
+  start.setDate(start.getDate()-((start.getDay()+6)%7));
+  let col=mk("div","heat-col");
+  for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){
+    const key=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    const n=stats[key]?.correct||0;
+    const cell=mk("i","heat-cell"+(n===0?"":" "+(n<5?"l1":n<15?"l2":n<30?"l3":"l4")));
+    cell.title=key+": "+n;col.appendChild(cell);
+    if(((d.getDay()+6)%7)===6){heat.appendChild(col);col=mk("div","heat-col")}
+  }
+  if(col.childElementCount)heat.appendChild(col);
+  heat.scrollLeft=heat.scrollWidth;
+  const tb=$("prog-table").querySelector("tbody");tb.innerHTML="";
+  for(const d of days.slice().reverse().slice(0,30)){
+    const day=new Date(d+"T00:00:00"),tr=mk("tr");
+    tr.innerHTML=`<td></td><td class="tr">${stats[d].correct}</td><td class="tr">${stats[d].total}</td>`;
+    tr.children[0].textContent=d===td()?"Today":day.toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"});
+    tb.appendChild(tr);
+  }
+  show("progress");
+}
+function mk(tag,cls){const el=document.createElement(tag);if(cls)el.className=cls;return el}
+
+/* ─── Import ─── */
+function openSheet(){$("scrim").classList.add("on");$("sheet").classList.add("on")}
+function closeSheet(){$("scrim").classList.remove("on");$("sheet").classList.remove("on");$("import-err").hidden=true;$("deck-name").value="";$("csv-text").value=""}
+
+/* ─── Events ─── */
+$("btn-all").addEventListener("click",()=>startSession(DECKS));
+$("btn-add").addEventListener("click",openSheet);
+$("btn-prog").addEventListener("click",renderProgress);
+$("btn-quit").addEventListener("click",()=>{show("home");renderHome()});
+$("btn-skip").addEventListener("click",reveal);
+$("btn-speak").addEventListener("click",()=>{if(cur)speak(cur.c.answers[0],cur.dk.lang)});
+$("btn-answer").addEventListener("click",reveal);
+$("btn-next").addEventListener("click",advance);
+$("ans-field").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();reveal()}});
+$("ans-field").addEventListener("input",function(){this.style.height="auto";this.style.height=this.scrollHeight+"px"});
+$("rating-ctrl",$("reveal-ui").querySelector(".rating-ctrl"))
+document.querySelector(".rating-ctrl").addEventListener("click",e=>{const b=e.target.closest(".r-btn");if(b)setRate(b.dataset.rate)});
+$("btn-done").addEventListener("click",()=>{renderHome();show("home")});
+$("btn-prog-back").addEventListener("click",()=>{renderHome();show("home")});
+$("btn-reset").addEventListener("click",()=>{if(!confirm("Clear all study history?"))return;prog={};stats={};sv(SK.p,prog);sv(SK.s,stats);renderProgress();renderHome()});
+$("btn-close-sheet").addEventListener("click",closeSheet);
+$("scrim").addEventListener("click",closeSheet);
+$("btn-file").addEventListener("click",()=>$("file-inp").click());
+$("file-inp").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$("csv-text").value=r.result;if(!$("deck-name").value)$("deck-name").value=f.name.replace(/\.csv$/i,"")};r.readAsText(f)});
+$("btn-save").addEventListener("click",()=>{
+  const name=$("deck-name").value.trim(),csv=$("csv-text").value.trim();
+  const err=$("import-err");err.hidden=true;
+  if(!name){err.textContent="Give the deck a name.";err.hidden=false;return}
+  if(!csv){err.textContent="Paste the CSV content.";err.hidden=false;return}
+  const id="d"+hid(name);
+  try{buildDeck(id,name,csv,"nl-NL")}catch(e){err.textContent=e.message;err.hidden=false;return}
+  custom[id]={name,csv,lang:"nl-NL"};sv(SK.d,custom);rebuildDecks();closeSheet();renderHome();
+});
+
+renderHome();
+</script>
+</div><!-- /.device -->
+</body>
+</html>
